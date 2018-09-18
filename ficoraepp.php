@@ -64,8 +64,9 @@ class FicoraModule
             $ns[$k] = new eppHost($v);
         }
 
-        if(!$ns)
+        if (!$ns) {
             throw new \RuntimeException('Not enough nameservers provided');
+        }
 
         $this->connection->request(
             new eppCreateDomainRequest(
@@ -417,12 +418,12 @@ class FicoraModule
     {
         return new ficoraEppDomain(
             "{$this->params['domainname']}", $this->getOrCreateContact(),
-            $this->params['ficora_contact']
+            ($this->params['ficora_contact'] ?? null)
                 ? [new eppContactHandle($this->params['ficora_contact'], eppContactHandle::CONTACT_TYPE_TECH)]
                 : null,
             $ns,
             $this->params['regperiod'],
-            eppContact::generateRandomString()
+            $this->generateStrongPassword()
         );
     }
 
@@ -435,6 +436,34 @@ class FicoraModule
                 }, ARRAY_FILTER_USE_KEY
             )
         );
+    }
+
+    protected function generateStrongPassword($length = 16)
+    {
+        $sets = [
+            'abcdefghjkmnpqrstuvwxyz',
+            'ABCDEFGHJKMNPQRSTUVWXYZ',
+            '1234567890',
+            '.',
+        ];
+
+        $all = '';
+        $password = '';
+
+        foreach ($sets as $set) {
+            $password .= $set[array_rand(str_split($set))];
+            $all .= $set;
+        }
+
+        $all = str_split($all);
+
+        for ($i = 0; $i < $length - count($sets); $i++) {
+            $password .= $all[array_rand($all)];
+        }
+
+        $password = str_shuffle($password);
+
+        return $password;
     }
 }
 
@@ -720,7 +749,7 @@ function ficoraepp_RenewDomain($params)
 function ficoraepp_GetNameservers($params)
 {
     try {
-        if(!$item = FicoraEppCache::get()->get("{$params['domainname']}_nameservers")) {
+        if (!$item = FicoraEppCache::get()->get("{$params['domainname']}_nameservers")) {
             $item = (new FicoraModule($params))->getNameservers();
             FicoraEppCache::get()->set("{$params['domainname']}_nameservers", $item, $params['ficora_cache_ttl']);
         }
@@ -759,8 +788,7 @@ function ficoraepp_SaveNameservers($params)
         (new FicoraModule($params))->updateNameservers();
 
         FicoraEppCache::get()->set("{$params['domainname']}_nameservers", array_filter($params,
-            function($key)
-            {
+            function ($key) {
                 return in_array($key, ['ns1', 'ns2', 'ns3', 'ns4', 'ns5']);
             }, ARRAY_FILTER_USE_KEY
         ), $params['ficora_apcu_ttl']);
@@ -799,7 +827,7 @@ function ficoraepp_SaveNameservers($params)
 function ficoraepp_GetContactDetails($params)
 {
     try {
-        if(!$item = FicoraEppCache::get()->get("{$params['domainname']}_contacts")) {
+        if (!$item = FicoraEppCache::get()->get("{$params['domainname']}_contacts")) {
             $item = (new FicoraModule($params))->getContacts();
             FicoraEppCache::get()->set("{$params['domainname']}_contacts", $item, $params['ficora_cache_ttl']);
         }
@@ -874,7 +902,7 @@ function ficoraepp_SaveContactDetails($params)
 function ficoraepp_GetEPPCode($params)
 {
     try {
-        if(!$item = FicoraEppCache::get()->get("{$params['domainname']}_epp")) {
+        if (!$item = FicoraEppCache::get()->get("{$params['domainname']}_epp")) {
             $item = (new FicoraModule($params))->epp();
             FicoraEppCache::get()->set("{$params['domainname']}_epp", $item, $params['ficora_cache_ttl']);
         }
