@@ -22,6 +22,7 @@ class FicoraEPPTest extends TestCase
     public static function providerTestWHMCSParametersNewDomains()
     {
         $personId = [
+            // Randomly generated social security IDs
             '260997-9955',
             '260997-941D',
             '260997-9036',
@@ -32,6 +33,7 @@ class FicoraEPPTest extends TestCase
         $personIdField = rand(1, 9);
 
         $companyId = [
+            // Randomly generated company IDs
             '2231508-9',
             '2423241-2',
             '4134373-9',
@@ -43,6 +45,7 @@ class FicoraEPPTest extends TestCase
         $companyIdField = rand(1, 9);
 
         $foreignCompanyId = [
+            // Randomly generated EU VAT numbers
             'MT10126313',
             'MT10271622',
             'MT10365719',
