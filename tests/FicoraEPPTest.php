@@ -5,6 +5,33 @@ use PHPUnit\Framework\TestCase;
 
 class FicoraEPPTest extends TestCase
 {
+    // Randomly generated EU VAT numbers
+    public static $foreignCompanyId = [
+        'MT10126313',
+        'MT10271622',
+        'MT10365719',
+        'MT10414318',
+        'MT10601519',
+    ];
+
+    // Randomly generated company IDs
+    public static $companyId = [
+        '2231508-9',
+        '2423241-2',
+        '4134373-9',
+        '8811421-2',
+        '2073316-4',
+        '7624385-0',
+    ];
+
+    // Randomly generated social security IDs
+    public static $personId = [
+        '260997-9955',
+        '260997-941D',
+        '260997-9036',
+        '260997-9590',
+        '260997-923U',
+    ];
 
     public static function providerCoreFunctionNames()
     {
@@ -19,139 +46,131 @@ class FicoraEPPTest extends TestCase
         ];
     }
 
-    public static function providerTestWHMCSParametersNewDomains()
+    public static function randomPerson()
     {
-        $personId = [
-            // Randomly generated social security IDs
-            '260997-9955',
-            '260997-941D',
-            '260997-9036',
-            '260997-9590',
-            '260997-923U',
-        ];
-
         $personIdField = rand(1, 9);
 
-        $companyId = [
-            // Randomly generated company IDs
-            '2231508-9',
-            '2423241-2',
-            '4134373-9',
-            '8811421-2',
-            '2073316-4',
-            '7624385-0',
-        ];
+        return array_merge(
+            static::sharedParameters(),
+            [
+                'domainname' => 'testdomain' . rand(10, 100000) . '.fi',
+                'firstname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
+                'lastname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
+                'address1' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . ' ' .
+                    rand(1, 40),
+                'city' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
+                'postcode' => rand(10000, 40000),
+                'email' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '@' .
+                    'google.com',
+                'country' => 'Finland',
+                'countrycode' => 'FI',
+                'phonenumber' => '+358.' . rand(100000000, 999999999),
+                'companyname' => '',
+                'state' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
+                'regperiod' => 1,
+                'ns1' => 'ns1.' . substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) .
+                    '.info',
+                'ns2' => 'ns2.' . substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) .
+                    '.info',
+                'userid' => 1,
+                "customfields{$personIdField}" => static::$personId[rand(0, count(static::$personId) - 1)],
+                'ficora_personid_field' => $personIdField,
+                'additionalfields' =>  [
+                    'idNumber' => static::$personId[rand(0, count(static::$personId) - 1)],
+                    'registrant_type' => 0,
+                ],
+                'ficora_companyid_field' => 0,
+            ]
+        );
+    }
 
+    public static function randomForeigner()
+    {
+        $params = static::randomPerson();
+        $params['country'] = 'Malta';
+        $params['countrycode'] = 'MT';
+        $params['additionalfields']['idNumber'] = null;
+        $params['additionalfields']['birthdate'] = '1990-01-01';
+
+        return $params;
+    }
+
+    public static function randomCompany()
+    {
         $companyIdField = rand(1, 9);
+        $params = static::randomPerson();
+        $params['companyname'] = substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10);
+        $params["customfields{$companyIdField}"] =  static::$companyId[rand(0, count(static::$companyId) - 1)];
+        $params['additionalfields']['idNumber'] = null;
+        $params['additionalfields']['registrant_type'] = 1;
+        $params['additionalfields']['registerNumber'] = static::$companyId[rand(0, count(static::$companyId) - 1)];
+        $params['ficora_companyid_field'] = $companyIdField;
 
-        $foreignCompanyId = [
-            // Randomly generated EU VAT numbers
-            'MT10126313',
-            'MT10271622',
-            'MT10365719',
-            'MT10414318',
-            'MT10601519',
-        ];
+        return $params;
+    }
 
+    public static function randomForeignCompany()
+    {
+        $params = static::randomCompany();
+        $params['country'] = 'Malta';
+        $params['countrycode'] = 'MT';
+        $params['additionalfields']['registerNumber'] =
+            static::$foreignCompanyId[rand(0, count(static::$foreignCompanyId) - 1)];
+        $params["customfields{$params['ficora_companyid_field']}"] =
+            static::$foreignCompanyId[rand(0, count(static::$foreignCompanyId) - 1)];
+
+        return $params;
+    }
+
+    public static function providerTestWHMCSParametersNewDomains()
+    {
         return [
-            [   // This is finnish person contact
+            [
                 array_merge(
-                    static::sharedParameters(),
-                    [
-                        'domainname' => 'testdomain' . rand(10, 100000) . '.fi',
-                        'firstname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'lastname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'address1' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . ' ' . rand(1, 40),
-                        'city' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'postcode' => rand(10000, 40000),
-                        'email' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '@' . 'google.com',
-                        'country' => 'Finland',
-                        'countrycode' => 'FI',
-                        'phonenumber' => '+358.' . rand(100000000, 999999999),
-                        'ficora_personid_field' => $personIdField,
-                        'companyname' => '',
-                        'state' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        "customfields{$personIdField}" => $personId[rand(0, count($personId) - 1)],
-                        'regperiod' => 1,
-                        'ns1' => 'ns1.' . substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '.info',
-                        'ns2' => 'ns2.' . substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '.info',
-                        'userid' => 1,
-                    ]
-                )
+                    static::randomPerson(),
+                    ['ficora_custom_fields_strategy' => 0]
+                ),
             ],
-            [   // This is finnish company contact
+            [
                 array_merge(
-                    static::sharedParameters(),
-                    [
-                        'domainname' => 'testdomain' . rand(10, 100000) . '.fi',
-                        'firstname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'lastname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'address1' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . ' ' . rand(1, 40),
-                        'city' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'postcode' => rand(10000, 40000),
-                        'email' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '@' . 'google.com',
-                        'country' => 'Finland',
-                        'countrycode' => 'FI',
-                        'phonenumber' => '+358.' . rand(100000000, 999999999),
-                        'companyname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'ficora_companyid_field' => $companyIdField,
-                        'state' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        "customfields{$companyIdField}" => $companyId[rand(0, count($companyId) - 1)],
-                        'regperiod' => 1,
-                        'ns1' => 'ns1.' . substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '.info',
-                        'ns2' => 'ns2.' . substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '.info',
-                        'userid' => 1,
-                    ]
-                )
+                    static::randomPerson(),
+                    ['ficora_custom_fields_strategy' => 1]
+                ),
             ],
-            [   // This is foreign (maltsese) company contact
+            [
                 array_merge(
-                    static::sharedParameters(),
-                    [
-                        'domainname' => 'testdomain' . rand(10, 100000) . '.fi',
-                        'firstname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'lastname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'address1' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . ' ' . rand(1, 40),
-                        'city' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'postcode' => rand(10000, 40000),
-                        'email' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '@' . 'google.com',
-                        'country' => 'Malta',
-                        'countrycode' => 'MT',
-                        'phonenumber' => '+356.' . rand(100000000, 999999999),
-                        'companyname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'ficora_companyid_field' => $companyIdField,
-                        'state' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        "customfields{$companyIdField}" => $foreignCompanyId[rand(0, count($foreignCompanyId) - 1)],
-                        'regperiod' => 1,
-                        'ns1' => 'ns1.' . substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '.info',
-                        'ns2' => 'ns2.' . substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '.info',
-                        'userid' => 1,
-                    ]
-                )
+                    static::randomCompany(),
+                    ['ficora_custom_fields_strategy' => 0]
+                ),
             ],
-            [   // This is foreign (maltsese) person contact
+            [
                 array_merge(
-                    static::sharedParameters(),
-                    [
-                        'domainname' => 'testdomain' . rand(10, 100000) . '.fi',
-                        'firstname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'lastname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'address1' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . ' ' . rand(1, 40),
-                        'city' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'postcode' => rand(10000, 40000),
-                        'email' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '@' . 'google.com',
-                        'country' => 'Malta',
-                        'countrycode' => 'MT',
-                        'phonenumber' => '+356.' . rand(100000000, 999999999),
-                        'companyname' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        'ficora_companyid_field' => $companyIdField,
-                        'state' => substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10),
-                        "customfields{$companyIdField}" => $foreignCompanyId[rand(0, count($foreignCompanyId) - 1)],
-                        'regperiod' => 1,
-                        'ns1' => 'ns1.' . substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '.info',
-                        'ns2' => 'ns2.' . substr(str_shuffle('abcdefghijklmopqrstuvwxyz'), 0, 10) . '.info',
-                        'userid' => 1,
-                    ]
+                    static::randomCompany(),
+                    ['ficora_custom_fields_strategy' => 1]
+                ),
+            ],
+            [
+                array_merge(
+                    static::randomForeigner(),
+                    ['ficora_custom_fields_strategy' => 0]
+                ),
+            ],
+            [
+                array_merge(
+                    static::randomForeigner(),
+                    ['ficora_custom_fields_strategy' => 1]
+                ),
+            ],
+            [
+                array_merge(
+                    static::randomForeignCompany(),
+                    ['ficora_custom_fields_strategy' => 0]
+                ),
+            ],
+            [
+                array_merge(
+                    static::randomForeignCompany(),
+                    ['ficora_custom_fields_strategy' => 1]
                 )
             ],
         ];

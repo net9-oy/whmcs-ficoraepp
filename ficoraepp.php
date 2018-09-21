@@ -340,14 +340,18 @@ class FicoraModule
 
     protected function newRegistrantHandle(): eppContact
     {
+        $extraInformation = $this->gatherExtraInformation($this->params['ficora_custom_fields_strategy']);
+
         return new eppContact(
             new ficoraEppContactPostalInfo(
-                $this->params['companyname']
+                $extraInformation->registrantType > 0
                     ? $this->params['companyname']
                     : "{$this->params['firstname']} {$this->params['lastname']}",
                 $this->params['city'],
                 $this->params['countrycode'],
-                $this->params['companyname'] ?? null,
+                $extraInformation->registrantType  > 0
+                    ? $this->params['companyname']
+                    : null,
                 $this->params['address1'],
                 null,
                 $this->params['postcode'],
@@ -355,12 +359,12 @@ class FicoraModule
                 $this->params['firstname'],
                 $this->params['lastname'],
                 $this->params['country'] === 'Finland',
-                $this->params['companyname']
+                $extraInformation->registrantType  > 0
                     ? null
-                    : $this->params['customfields' . $this->params['ficora_personid_field']],
+                    : $extraInformation->idNumber,
                 null,
-                $this->params['companyname']
-                    ? $this->params['customfields' . $this->params['ficora_companyid_field']]
+                $extraInformation->registrantType  > 0
+                    ? $extraInformation->registerNumber
                     : null
             ),
             $this->params['email'],
@@ -375,24 +379,23 @@ class FicoraModule
     protected function createContact(): string
     {
         $contact = new ficoraEppCreateContactRequest($this->newRegistrantHandle());
+        $extraInformation = $this->gatherExtraInformation($this->params['ficora_custom_fields_strategy']);
 
         $contact->setRole(ficoraEppCreateContactRequest::FI_CONTACT_ROLE_REGISTRANT);
-        $contact->setType($this->params['companyname']
-            ? ficoraEppCreateContactRequest::FI_CONTACT_TYPE_COMPANY
-            : ficoraEppCreateContactRequest::FI_CONTACT_TYPE_PRIVATE);
+        $contact->setType($extraInformation->registrantType);
         $contact->setLegalemail($this->params['email']);
         $contact->setIsfinnish($this->params['country'] === 'Finland');
 
-        if ($this->params['companyname']) {
-            $contact->setRegisternumber($this->params['customfields' . $this->params['ficora_companyid_field']]);
+        if($extraInformation->registrantType > 0) {
+            $contact->setRegisternumber($extraInformation->registerNumber);
             $contact->setLastname($this->params['companyname']);
         } else {
-            $contact->setFirstname($this->params['companyname'] ? null : $this->params['firstname']);
+            $contact->setFirstname($this->params['firstname']);
             $contact->setLastname($this->params['lastname']);
             if ($this->params['country'] === 'Finland') {
-                $contact->setIdentity($this->params['customfields' . $this->params['ficora_personid_field']]);
+                $contact->setIdentity($extraInformation->idNumber);
             } else {
-                $contact->setBirthdate('1990-01-01');
+                $contact->setBirthdate($extraInformation->birthdate);
             }
         }
 
@@ -464,6 +467,29 @@ class FicoraModule
         $password = str_shuffle($password);
 
         return $password;
+    }
+
+    protected function gatherExtraInformation($strategy)
+    {
+        switch($strategy) {
+            case 0:
+                return (object) [
+                    'registrantType' => $this->params["additionalfields"]["registrant_type"] ?? null,
+                    'idNumber' => $this->params["additionalfields"]["idNumber"] ?? null,
+                    'registerNumber' => $this->params["additionalfields"]["registerNumber"] ?? null,
+                    'birthdate' => $this->params["additionalfields"]["birthdate"] ?? null,
+                ];
+            case 1:
+                return (object) [
+                    'registrantType' => $this->params["companyname"] ? 1 : 0,
+                    'idNumber' => $this->params['customfields' . $this->params['ficora_personid_field']] ?? null,
+                    'registerNumber' => $this->params['customfields' . $this->params['ficora_companyid_field']] ?? null,
+                    'birthdate' => '1990-01-01',
+                ];
+            default:
+                throw new \RuntimeException(
+                    "Custom field strategy {$this->params['ficora_custom_fields_strategy']} not recognized.");
+        }
     }
 }
 
@@ -611,6 +637,17 @@ function ficoraepp_getConfigArray()
             'Size' => '256',
             'Default' => 60 * 60 * 24, // 24 hours
             'Description' => 'Time To Live for caching of contact, nameserver etc. data',
+        ],
+        'ficora_custom_fields_strategy' => [
+            'FriendlyName' => 'Additional fields strategy',
+            'Type' => 'dropdown',
+            'Options' => [
+                'Additional fields',
+                'Profile fields ',
+            ],
+            'Default' => 0,
+            'Description' =>
+                'The strategy used for gathering the required extra information from user for .fi registration',
         ],
     ];
 }
