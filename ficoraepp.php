@@ -681,9 +681,9 @@ function ficoraepp_RegisterDomain($params): array
         logModuleCall(
             'ficoraepp',
             __FUNCTION__,
-            $params,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage() . "\n" . $e->getTraceAsString()
         );
 
         return [
@@ -722,9 +722,9 @@ function ficoraepp_TransferDomain($params)
         logModuleCall(
             'ficoraepp',
             __FUNCTION__,
-            $params,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage() . "\n" . $e->getTraceAsString()
         );
         return [
             'error' => $e->getMessage(),
@@ -761,9 +761,9 @@ function ficoraepp_RenewDomain($params)
         logModuleCall(
             'ficoraepp',
             __FUNCTION__,
-            $params,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage() . "\n" . $e->getTraceAsString()
         );
         return [
             'error' => $e->getMessage(),
@@ -796,9 +796,9 @@ function ficoraepp_GetNameservers($params)
         logModuleCall(
             'ficoraepp',
             __FUNCTION__,
-            $params,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage() . "\n" . $e->getTraceAsString()
         );
         return [
             'error' => $e->getMessage(),
@@ -838,9 +838,9 @@ function ficoraepp_SaveNameservers($params)
         logModuleCall(
             'ficoraepp',
             __FUNCTION__,
-            $params,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage() . "\n" . $e->getTraceAsString()
         );
         return [
             'error' => $e->getMessage(),
@@ -874,9 +874,9 @@ function ficoraepp_GetContactDetails($params)
         logModuleCall(
             'ficoraepp',
             __FUNCTION__,
-            $params,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage() . "\n" . $e->getTraceAsString()
         );
         return [
             'error' => $e->getMessage(),
@@ -912,9 +912,9 @@ function ficoraepp_SaveContactDetails($params)
         logModuleCall(
             'ficoraepp',
             __FUNCTION__,
-            $params,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage() . "\n" . $e->getTraceAsString()
         );
         return [
             'error' => $e->getMessage(),
@@ -949,9 +949,9 @@ function ficoraepp_GetEPPCode($params)
         logModuleCall(
             'ficoraepp',
             __FUNCTION__,
-            $params,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage() . "\n" . $e->getTraceAsString()
         );
         return [
             'error' => $e->getMessage(),
@@ -985,9 +985,9 @@ function ficoraepp_Sync($params)
         logModuleCall(
             'ficoraepp',
             __FUNCTION__,
-            $params,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
             $e->getMessage(),
-            $e->getTraceAsString()
+            $e->getMessage() . "\n" . $e->getTraceAsString()
         );
         return [
             'error' => $e->getMessage(),
