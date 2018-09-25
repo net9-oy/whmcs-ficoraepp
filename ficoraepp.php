@@ -286,7 +286,7 @@ class FicoraModule
                     );
                     break;
                 default:
-                    continue;
+                    continue 2;
             }
         }
     }
