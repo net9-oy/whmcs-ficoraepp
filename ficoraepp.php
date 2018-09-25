@@ -1,6 +1,6 @@
 <?php
-if (!defined("WHMCS")) {
-    die("This file cannot be accessed directly");
+if (!defined('WHMCS')) {
+    die('This file cannot be accessed directly');
 }
 
 use Illuminate\Database\Capsule\Manager as Capsule;
@@ -82,9 +82,9 @@ class FicoraModule
      */
     public function updateNameservers()
     {
-        $domain = new ficoraEppDomain("{$this->params['domainname']}");
-        $del = new ficoraEppDomain("{$this->params['domainname']}");
-        $add = new ficoraEppDomain("{$this->params['domainname']}");
+        $domain = new ficoraEppDomain($this->params['domainname']);
+        $del = new ficoraEppDomain($this->params['domainname']);
+        $add = new ficoraEppDomain($this->params['domainname']);
         foreach ($this->getNameservers() as $ns) {
             $del->addHost(new eppHost($ns));
         }
@@ -114,7 +114,7 @@ class FicoraModule
         $this->connection->request(
             new ficoraEppRenewRequest(
                 new ficoraEppDomain(
-                    "{$this->params['domainname']}",
+                    $this->params['domainname'],
                     null,
                     null,
                     null,
@@ -188,7 +188,7 @@ class FicoraModule
     {
         /* @var $response ficoraEppInfoDomainResponse */
         $response = $this->connection->request(new ficoraEppInfoDomainRequest(new ficoraEppDomain(
-            "{$this->params['domainname']}")));
+            $this->params['domainname'])));
         return $response;
     }
 
@@ -197,7 +197,7 @@ class FicoraModule
      */
     public function transfer()
     {
-        $domain = new ficoraEppDomain("{$this->params['domainname']}");
+        $domain = new ficoraEppDomain($this->params['domainname']);
         $domain->setAuthorisationCode($this->params['eppcode']);
         $this->connection->request(
             new eppTransferRequest(
@@ -216,11 +216,11 @@ class FicoraModule
         $password = str_shuffle("aB1#" . eppContact::generateRandomString());
         $this->connection->request(
             new ficoraEppUpdateDomainRequest(
-                "{$this->params['domainname']}",
+                $this->params['domainname'],
                 null,
                 null,
                 new ficoraEppDomain(
-                    "{$this->params['domainname']}",
+                    $this->params['domainname'],
                     null,
                     null,
                     null,
@@ -256,38 +256,36 @@ class FicoraModule
     public function saveContact()
     {
         foreach ($this->params['contactdetails'] as $type => $details) {
-            switch ($type) {
-                case 'Registrant':
-                    $postal = new ficoraEppContactPostalInfo(
-                        null,
-                        $details['City'],
-                        $details['Country'],
-                        null,
-                        $details['Address 1'],
-                        null,
-                        $details['Postcode'],
-                        eppContact::TYPE_LOC
-                    );
-                    $postal->setIsFinnish($details['Country'] === 'FI');
-                    $contact = new eppContact(
-                        $postal,
-                        $details['Email Address'],
-                        $details['Phone Number']
-                    );
-                    $contact->setPassword(null);
-                    $contact->setType(eppContact::TYPE_LOC);
-                    $this->connection->request(
-                        new ficoraEppUpdateContactRequest(
-                            $this->getContact(),
-                            null,
-                            null,
-                            $contact
-                        )
-                    );
-                    break;
-                default:
-                    continue 2;
+            if($type !== 'Registrant') {
+                continue;
             }
+
+            $postal = new ficoraEppContactPostalInfo(
+                null,
+                $details['City'],
+                $details['Country'],
+                null,
+                $details['Address 1'],
+                null,
+                $details['Postcode'],
+                eppContact::TYPE_LOC
+            );
+            $postal->setIsFinnish($details['Country'] === 'FI');
+            $contact = new eppContact(
+                $postal,
+                $details['Email Address'],
+                $details['Phone Number']
+            );
+            $contact->setPassword(null);
+            $contact->setType(eppContact::TYPE_LOC);
+            $this->connection->request(
+                new ficoraEppUpdateContactRequest(
+                    $this->getContact(),
+                    null,
+                    null,
+                    $contact
+                )
+            );
         }
     }
 
@@ -303,7 +301,7 @@ class FicoraModule
             throw new \RuntimeException('No client id defined when calling getContact()');
         }
 
-        if (!class_exists('\Illuminate\Database\Capsule\Manager')) {
+        if (!class_exists(Capsule::class)) {
             return null;
         }
 
@@ -420,7 +418,7 @@ class FicoraModule
     protected function eppDomain(array $ns): ficoraEppDomain
     {
         return new ficoraEppDomain(
-            "{$this->params['domainname']}", $this->getOrCreateContact(),
+            $this->params['domainname'], $this->getOrCreateContact(),
             ($this->params['ficora_contact'] ?? null)
                 ? [new eppContactHandle($this->params['ficora_contact'], eppContactHandle::CONTACT_TYPE_TECH)]
                 : null,
@@ -441,7 +439,7 @@ class FicoraModule
         );
     }
 
-    protected function generateStrongPassword($length = 16)
+    protected function generateStrongPassword($length = 16): string
     {
         $sets = [
             'abcdefghjkmnpqrstuvwxyz',
@@ -474,14 +472,14 @@ class FicoraModule
         switch($strategy) {
             case 0:
                 return (object) [
-                    'registrantType' => $this->params["additionalfields"]["registrant_type"] ?? null,
-                    'idNumber' => $this->params["additionalfields"]["idNumber"] ?? null,
-                    'registerNumber' => $this->params["additionalfields"]["registerNumber"] ?? null,
-                    'birthdate' => $this->params["additionalfields"]["birthdate"] ?? null,
+                    'registrantType' => $this->params['additionalfields']['registrant_type'] ?? null,
+                    'idNumber' => $this->params['additionalfields']['idNumber'] ?? null,
+                    'registerNumber' => $this->params['additionalfields']['registerNumber'] ?? null,
+                    'birthdate' => $this->params['additionalfields']['birthdate'] ?? null,
                 ];
             case 1:
                 return (object) [
-                    'registrantType' => $this->params["companyname"] ? 1 : 0,
+                    'registrantType' => $this->params['companyname'] ? 1 : 0,
                     'idNumber' => $this->params['customfields' . $this->params['ficora_personid_field']] ?? null,
                     'registerNumber' => $this->params['customfields' . $this->params['ficora_companyid_field']] ?? null,
                     'birthdate' => '1990-01-01',
