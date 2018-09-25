@@ -368,7 +368,7 @@ class FicoraModule
                     : null
             ),
             $this->params['email'],
-            $this->params['phonenumber']
+            $this->params['fullphonenumber']
         );
     }
 
