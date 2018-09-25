@@ -788,7 +788,7 @@ function ficoraepp_GetNameservers($params)
     try {
         if (!$item = FicoraEppCache::get()->get("{$params['domainname']}_nameservers")) {
             $item = (new FicoraModule($params))->getNameservers();
-            FicoraEppCache::get()->set("{$params['domainname']}_nameservers", $item, $params['ficora_cache_ttl']);
+            FicoraEppCache::get()->set("{$params['domainname']}_nameservers", $item, (int) $params['ficora_cache_ttl']);
         }
 
         return array_merge(['success' => true], $item);
@@ -828,7 +828,7 @@ function ficoraepp_SaveNameservers($params)
             function ($key) {
                 return in_array($key, ['ns1', 'ns2', 'ns3', 'ns4', 'ns5']);
             }, ARRAY_FILTER_USE_KEY
-        ), $params['ficora_apcu_ttl']);
+        ), (int) $params['ficora_apcu_ttl']);
 
         return [
             'success' => true,
@@ -866,7 +866,7 @@ function ficoraepp_GetContactDetails($params)
     try {
         if (!$item = FicoraEppCache::get()->get("{$params['domainname']}_contacts")) {
             $item = (new FicoraModule($params))->getContacts();
-            FicoraEppCache::get()->set("{$params['domainname']}_contacts", $item, $params['ficora_cache_ttl']);
+            FicoraEppCache::get()->set("{$params['domainname']}_contacts", $item, (int) $params['ficora_cache_ttl']);
         }
 
         return $item;
@@ -941,7 +941,7 @@ function ficoraepp_GetEPPCode($params)
     try {
         if (!$item = FicoraEppCache::get()->get("{$params['domainname']}_epp")) {
             $item = (new FicoraModule($params))->epp();
-            FicoraEppCache::get()->set("{$params['domainname']}_epp", $item, $params['ficora_cache_ttl']);
+            FicoraEppCache::get()->set("{$params['domainname']}_epp", $item, (int) $params['ficora_cache_ttl']);
         }
 
         return ['eppcode' => $item];
