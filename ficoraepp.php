@@ -24,6 +24,7 @@ use Metaregistrar\EPP\ficoraEppUpdateDomainRequest;
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/cache.php';
+require __DIR__ . '/ficoraEppTransferRequest.php';
 
 class FicoraModule
 {
@@ -44,6 +45,8 @@ class FicoraModule
         $connection->setTimeout($this->params['ficora_timeout']);
         $connection->setRetry($this->params['ficora_retry']);
         $connection->setLogFile('debug.txt');
+        $connection->addCommandResponse('FicoraEpp\\ficoraEppTransferRequest',
+            'Metaregistrar\\EPP\\eppTransferResponse');
         $this->connection = $connection;
         $this->connection->login();
     }
@@ -186,7 +189,7 @@ class FicoraModule
         $domain->setAuthorisationCode($this->params['eppcode']);
         $domain->setPeriod(0);
         $this->connection->request(
-            new eppTransferRequest(
+            new \FicoraEPP\ficoraEppTransferRequest(
                 eppTransferRequest::OPERATION_REQUEST,
                 $domain
             )
