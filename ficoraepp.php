@@ -52,25 +52,9 @@ class FicoraModule
      */
     public function register()
     {
-        if (count($nameservers = $this->parseNameservers()) < 2) {
-            throw new \RuntimeException('Not enough nameservers provided');
-        }
-
-        foreach ($nameservers as $k => $v) {
-            if (empty($v)) {
-                continue;
-            }
-
-            $ns[$k] = new eppHost($v);
-        }
-
-        if (!$ns) {
-            throw new \RuntimeException('Not enough nameservers provided');
-        }
-
         $this->connection->request(
             new eppCreateDomainRequest(
-                $this->eppDomain($ns),
+                $this->eppDomain($this->getNameserversForRequest()),
                 false,
                 false
             )
@@ -197,7 +181,7 @@ class FicoraModule
      */
     public function transfer()
     {
-        $domain = new ficoraEppDomain($this->params['domainname']);
+        $domain = $this->eppDomain($this->getNameserversForRequest());
         $domain->setAuthorisationCode($this->params['eppcode']);
         $this->connection->request(
             new eppTransferRequest(
@@ -287,6 +271,27 @@ class FicoraModule
                 )
             );
         }
+    }
+
+    protected function getNameserversForRequest(): array
+    {
+        if (count($nameservers = $this->parseNameservers()) < 2) {
+            throw new \RuntimeException('Not enough nameservers provided');
+        }
+
+        foreach ($nameservers as $k => $v) {
+            if (empty($v)) {
+                continue;
+            }
+
+            $ns[$k] = new eppHost($v);
+        }
+
+        if (!$ns) {
+            throw new \RuntimeException('Not enough nameservers provided');
+        }
+
+        return $ns;
     }
 
     protected function getContact()
