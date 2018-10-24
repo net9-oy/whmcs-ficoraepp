@@ -40,7 +40,7 @@ class ficoraEppTransferRequest extends eppRequest
                 throw new eppException("nsRecord has no hostname on metaregEppTransferExtendedRequest");
             }
         }
-        $this->domainObject->appendChild($ns);
+        $this->domainobject->appendChild($ns);
 
         $this->getCommand()->appendChild($transfer);
         $this->addSessionId();
