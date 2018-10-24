@@ -35,7 +35,7 @@ class FicoraModule
     public function __construct(array $params)
     {
         $this->params = $params;
-        $connection = new ficoraEppConnection($params['debug'] ?? false, '/tmp/none');
+        $connection = new ficoraEppConnection($params['ficora_debug'], '/tmp/none');
         $connection->setPort($params['ficora_port']);
         $connection->setUsername($params['ficora_username']);
         $connection->setPassword($params['ficora_password']);
@@ -43,6 +43,7 @@ class FicoraModule
         $connection->setHostname($params['ficora_hostname']);
         $connection->setTimeout($this->params['ficora_timeout']);
         $connection->setRetry($this->params['ficora_retry']);
+        $connection->setLogFile('debug.txt');
         $this->connection = $connection;
         $this->connection->login();
     }
@@ -652,6 +653,11 @@ function ficoraepp_getConfigArray()
             'Default' => 0,
             'Description' =>
                 'The strategy used for gathering the required extra information from user for .fi registration',
+        ],
+        'ficora_debug' => [
+            'FriendlyName' => 'Enable debug mode',
+            'Type' => 'yesno',
+            'Description' => 'Module will write debug info the the webroot in debug.txt file',
         ],
     ];
 }
