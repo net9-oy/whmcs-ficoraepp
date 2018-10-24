@@ -183,6 +183,7 @@ class FicoraModule
     {
         $domain = $this->eppDomain($this->getNameserversForRequest());
         $domain->setAuthorisationCode($this->params['eppcode']);
+        $domain->setPeriod(0);
         $this->connection->request(
             new eppTransferRequest(
                 eppTransferRequest::OPERATION_REQUEST,
