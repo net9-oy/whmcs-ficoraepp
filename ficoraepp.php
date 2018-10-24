@@ -190,7 +190,6 @@ class FicoraModule
         $domain->setPeriod(0);
         $this->connection->request(
             new \FicoraEPP\ficoraEppTransferRequest(
-                eppTransferRequest::OPERATION_REQUEST,
                 $domain
             )
         );
