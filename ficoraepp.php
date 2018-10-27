@@ -24,6 +24,7 @@ use Metaregistrar\EPP\ficoraEppUpdateDomainRequest;
 
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/cache.php';
+require __DIR__ . '/ficoraEppTransferRequest.php';
 
 class FicoraModule
 {
@@ -35,7 +36,7 @@ class FicoraModule
     public function __construct(array $params)
     {
         $this->params = $params;
-        $connection = new ficoraEppConnection($params['debug'] ?? false, '/tmp/none');
+        $connection = new ficoraEppConnection($params['ficora_debug'], '/tmp/none');
         $connection->setPort($params['ficora_port']);
         $connection->setUsername($params['ficora_username']);
         $connection->setPassword($params['ficora_password']);
@@ -43,6 +44,9 @@ class FicoraModule
         $connection->setHostname($params['ficora_hostname']);
         $connection->setTimeout($this->params['ficora_timeout']);
         $connection->setRetry($this->params['ficora_retry']);
+        $connection->setLogFile('debug.txt');
+        $connection->addCommandResponse('FicoraEpp\\ficoraEppTransferRequest',
+            'Metaregistrar\\EPP\\eppTransferResponse');
         $this->connection = $connection;
         $this->connection->login();
     }
@@ -52,25 +56,9 @@ class FicoraModule
      */
     public function register()
     {
-        if (count($nameservers = $this->parseNameservers()) < 2) {
-            throw new \RuntimeException('Not enough nameservers provided');
-        }
-
-        foreach ($nameservers as $k => $v) {
-            if (empty($v)) {
-                continue;
-            }
-
-            $ns[$k] = new eppHost($v);
-        }
-
-        if (!$ns) {
-            throw new \RuntimeException('Not enough nameservers provided');
-        }
-
         $this->connection->request(
             new eppCreateDomainRequest(
-                $this->eppDomain($ns),
+                $this->eppDomain($this->getNameserversForRequest()),
                 false,
                 false
             )
@@ -197,11 +185,11 @@ class FicoraModule
      */
     public function transfer()
     {
-        $domain = new ficoraEppDomain($this->params['domainname']);
+        $domain = $this->eppDomain($this->getNameserversForRequest());
         $domain->setAuthorisationCode($this->params['eppcode']);
+        $domain->setPeriod(0);
         $this->connection->request(
-            new eppTransferRequest(
-                eppTransferRequest::OPERATION_REQUEST,
+            new \FicoraEPP\ficoraEppTransferRequest(
                 $domain
             )
         );
@@ -287,6 +275,27 @@ class FicoraModule
                 )
             );
         }
+    }
+
+    protected function getNameserversForRequest(): array
+    {
+        if (count($nameservers = $this->parseNameservers()) < 2) {
+            throw new \RuntimeException('Not enough nameservers provided');
+        }
+
+        foreach ($nameservers as $k => $v) {
+            if (empty($v)) {
+                continue;
+            }
+
+            $ns[$k] = new eppHost($v);
+        }
+
+        if (!$ns) {
+            throw new \RuntimeException('Not enough nameservers provided');
+        }
+
+        return $ns;
     }
 
     protected function getContact()
@@ -646,6 +655,11 @@ function ficoraepp_getConfigArray()
             'Default' => 0,
             'Description' =>
                 'The strategy used for gathering the required extra information from user for .fi registration',
+        ],
+        'ficora_debug' => [
+            'FriendlyName' => 'Enable debug mode',
+            'Type' => 'yesno',
+            'Description' => 'Module will write debug info the the webroot in debug.txt file',
         ],
     ];
 }
