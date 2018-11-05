@@ -391,7 +391,7 @@ class FicoraModule
         $contact->setRole(ficoraEppCreateContactRequest::FI_CONTACT_ROLE_REGISTRANT);
         $contact->setType($extraInformation->registrantType);
         $contact->setLegalemail($this->params['email']);
-        $contact->setIsfinnish($this->params['country'] === 'Finland');
+        $contact->setIsfinnish($this->params['countryname'] === 'Finland');
 
         if($extraInformation->registrantType > 0) {
             $contact->setRegisternumber($extraInformation->registerNumber);
@@ -399,7 +399,7 @@ class FicoraModule
         } else {
             $contact->setFirstname($this->params['firstname']);
             $contact->setLastname($this->params['lastname']);
-            if ($this->params['country'] === 'Finland') {
+            if ($this->params['countryname'] === 'Finland') {
                 $contact->setIdentity($extraInformation->idNumber);
             } else {
                 $contact->setBirthdate($extraInformation->birthdate);
