@@ -20,10 +20,10 @@ A Ficora EPP domain registrar module for WHMCS
 * On Ficora you must allow your WHMCS IP-address. 
 * Generate Certificate for authentication. Private Key must have password. Upload public certificate (cert.pem) to Ficora. 
 
-´´´
+```
 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem
 cat cert key > epp.pem
-´´´
+```
 
 * Fill API Username, API Password, Tech Contact, Certificate Path (epp.pem) and Certificate Password to WHMCS Setup -> Product & Services -> Domain Registerar -> Ficora Epp.
 
