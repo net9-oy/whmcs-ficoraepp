@@ -803,7 +803,7 @@ function ficoraepp_GetNameservers($params)
             FicoraEppCache::get()->set("{$params['domainname']}_nameservers", $item, (int) $params['ficora_cache_ttl']);
         }
 
-        return array_merge(['success' => true], $item);
+        return $item;
     } catch (\Exception $e) {
         logModuleCall(
             'ficoraepp',
