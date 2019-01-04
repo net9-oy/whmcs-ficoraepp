@@ -4,7 +4,7 @@ A Ficora EPP domain registrar module for WHMCS
 
 ## Requirements
 
-* PHP7.2 and Composer
+* PHP 7.2 with PHP-APCU and Composer
 * Ficora EPP Account (or Test Account)
 
 ## Installation
