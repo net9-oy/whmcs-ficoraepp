@@ -1001,7 +1001,7 @@ function ficoraepp_GetEPPCode($params)
 function ficoraepp_Sync($params)
 {
     try {
-        cron = (new FicoraModule($params))->cron();
+        $cron = (new FicoraModule($params))->cron();
 
         return [
             'expirydate' => (new DateTime(cron->getDomainExpirationDate()))->format('Y-m-d'), // Format: YYYY-MM-DD
