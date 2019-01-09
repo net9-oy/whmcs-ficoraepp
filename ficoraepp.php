@@ -179,7 +179,21 @@ class FicoraModule
             $this->params['domainname'])));
         return $response;
     }
-
+    
+    /**
+	 * Second function for Cron
+     * @return ficoraEppInfoDomainResponse
+     * @throws \Metaregistrar\EPP\eppException
+     */
+    public function cron(): ficoraEppInfoDomainResponse
+    {
+        /* @var $response ficoraEppInfoDomainResponse */
+        $response = $this->connection->request(new ficoraEppInfoDomainRequest(new ficoraEppDomain(
+            $this->params['domain'])));
+        return $response;
+    }
+    
+    
     /**
      * @throws \Metaregistrar\EPP\eppException
      */
@@ -987,10 +1001,10 @@ function ficoraepp_GetEPPCode($params)
 function ficoraepp_Sync($params)
 {
     try {
-        $info = (new FicoraModule($params))->info();
+        cron = (new FicoraModule($params))->cron();
 
         return [
-            'expirydate' => (new DateTime($info->getDomainExpirationDate()))->format('Y-m-d'), // Format: YYYY-MM-DD
+            'expirydate' => (new DateTime(cron->getDomainExpirationDate()))->format('Y-m-d'), // Format: YYYY-MM-DD
         ];
 
     } catch (\Exception $e) {
