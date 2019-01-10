@@ -1006,3 +1006,43 @@ function ficoraepp_Sync($params)
         ];
     }
 }
+
+/**
+ * Incoming Domain Transfer Sync.
+ *
+ * Check status of incoming domain transfers and notify end-user upon
+ * completion. This function is called daily for incoming domains.
+ *
+ * @param array $params common module parameters
+ *
+ * @see https://developers.whmcs.com/domain-registrars/module-parameters/
+ *
+ * @return 
+
+ **/
+function ficoraepp_TransferSync($params)
+{
+    try {
+        $cron = (new FicoraModule($params))->cron();
+
+		$expiredate = (new DateTime($cron->getDomainExpirationDate()))->format('Y-m-d');
+				
+        return array (
+            'expirydate' => (new DateTime($cron->getDomainExpirationDate()))->format('Y-m-d'), // Format: YYYY-MM-DD
+			'completed' => true,
+        );
+
+    } catch (\Exception $e) {
+        logModuleCall(
+            'ficoraepp',
+            __FUNCTION__,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
+            $e->getMessage(),
+            $e->getMessage() . "\n" . $e->getTraceAsString()
+        );
+				
+        return [
+            'error' => $e->getMessage(),
+        ];
+    }	
+}
