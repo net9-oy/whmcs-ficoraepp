@@ -29,4 +29,4 @@ cat cert key > epp.pem
 
 ## Debug
 
-* Enable Debug-logging on WHMCS HMCS Setup -> Product & Services -> Domain Registerar -> Ficora Epp and tick Enable debug mode. This will write debug log to <your WHMCS installation>/admin/debug.txt
+* Enable Debug-logging on WHMCS HMCS Setup -> Product & Services -> Domain Registerar -> Ficora Epp and tick Enable debug mode. This will write debug log to <your WHMCS installation>/debug.txt
