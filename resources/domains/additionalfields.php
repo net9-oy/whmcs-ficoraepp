@@ -2,20 +2,25 @@
 $registrant_type = [
     'Name' => 'registrant_type',
     'DisplayName' => 'Registrant Type',
-    'LangVar' => 'ficora_registrant_type',
+    'LangVar' => 'nordname_registrant_type',
     'Type' => 'dropdown',
     'Options' => implode(',', [
-        '0|' . \Lang::trans('Private Person'),
-        '1|' . \Lang::trans('Company'),
-        '2|' . \Lang::trans('Corporation'),
-        '3|' . \Lang::trans('Institution'),
-        '4|' . \Lang::trans('Political Party'),
-        '5|' . \Lang::trans('Township'),
-        '6|' . \Lang::trans('Government'),
-        '7|' . \Lang::trans('Public Community'),
+        // 00 is a clever value that casts to int(0) in PHP, so we can still distinguish between these two but the API
+        // will handle them all the same
+        '00|' . \Lang::trans('Finnish Private Person'),
+        '0|'  . \Lang::trans('Foreign Private Person'),
+        '1|'  . \Lang::trans('Company'),
+        '2|'  . \Lang::trans('Corporation'),
+        '3|'  . \Lang::trans('Institution'),
+        '4|'  . \Lang::trans('Political Party'),
+        '5|'  . \Lang::trans('Township'),
+        '6|'  . \Lang::trans('Government'),
+        '7|'  . \Lang::trans('Public Community'),
     ]),
-    "Required" => true
+    'Default' => '00',
+    'Required' => false
 ];
+
 
 $additionaldomainfields['.fi'][] = $registrant_type;
 $additionaldomainfields['.fi'][] = [

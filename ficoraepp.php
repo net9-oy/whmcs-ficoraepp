@@ -481,7 +481,7 @@ class FicoraModule
         switch($strategy) {
             case 0:
                 return (object) [
-                    'registrantType' => $this->params['additionalfields']['registrant_type'] ?? null,
+                    'registrantType' => (int) ($this->params['additionalfields']['registrant_type'] ?? 0),
                     'idNumber' => $this->params['additionalfields']['idNumber'] ?? null,
                     'registerNumber' => $this->params['additionalfields']['registerNumber'] ?? null,
                     'birthdate' => $this->params['additionalfields']['birthdate'] ?? null,
