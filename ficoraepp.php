@@ -1006,3 +1006,44 @@ function ficoraepp_Sync($params)
         ];
     }
 }
+
+function ficoraepp_CompleteTransfer($params)
+{
+    try {
+        $date = (new DateTime((new FicoraModule($params))->info()->getDomainExpirationDate()))->format('Y-m-d');
+
+        update_query('tbldomains', [
+            'nextduedate' => $date,
+            'expirydate' => $date,
+            'status' => 'Active',
+        ], ['id' => $params['domainid']]);
+
+        /** @noinspection UnusedFunctionResultInspection */
+        sendMessage('Domain Transfer Completed', $params['domainid']);
+
+        /** @noinspection UnusedFunctionResultInspection */
+        run_hook('DomainTransferCompleted', [
+            'domainId' => $params['domainid'],
+            'domain' => $params['domainname'],
+            'registrationPeriod' => $params['regperiod'],
+            'expiryDate' => $date,
+            'registrar' => 'ficoraepp'
+        ]);
+
+        return [
+            'success' => true
+        ];
+
+    } catch (\Exception $e) {
+        logModuleCall(
+            'ficoraepp',
+            __FUNCTION__,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
+            $e->getMessage(),
+            $e->getMessage() . "\n" . $e->getTraceAsString()
+        );
+        return [
+            'error' => $e->getMessage(),
+        ];
+    }
+}

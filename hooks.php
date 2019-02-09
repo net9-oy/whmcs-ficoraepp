@@ -156,3 +156,13 @@ add_hook('ClientAreaHeadOutput', 50, function($vars) {
     <?php
     return ob_get_clean();
 });
+
+
+add_hook('AfterRegistrarTransfer', 50, function($vars) {
+    if(@$vars['params']['registrar'] !== 'ficoraepp') {
+        return;
+    }
+
+    /** @noinspection UnusedFunctionResultInspection */
+    RegCallFunction($vars['params'], 'CompleteTransfer');
+});
