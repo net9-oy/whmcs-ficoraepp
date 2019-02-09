@@ -77,3 +77,44 @@ add_hook('CartTotalAdjustment', 1, function ()
         $fields->saveToDatabase($id);
     }
 });
+
+add_hook('ClientAreaHeadOutput', 50, function($vars) {
+    if($vars['templatefile'] !== 'configuredomains')
+        return;
+
+    foreach($_SESSION['cart']['domains'] as $key => $domain) {
+        if(substr($domain['domain'], -strlen('.fi')) !== '.fi')
+            continue;
+
+        $domains[] = $key;
+    }
+
+    ob_start();
+    ?>
+        <script type="text/javascript">
+            $(document).ready(function() {
+                <?php foreach($domains as $id): ?>
+                    $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][1]"]').closest('.row').show();
+                    $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][2]"]').closest('.row').hide();
+                    $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][3]"]').closest('.row').hide();
+                    $('#frmConfigureDomains select[name="domainfield[<?= $id ?>][0]"]').change(function() {
+                        if(this.value === '0') {
+                            $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][1]"]').closest('.row').hide();
+                            $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][2]"]').closest('.row').hide();
+                            $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][3]"]').closest('.row').show();
+                        } else if(this.value === '00') {
+                            $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][1]"]').closest('.row').show();
+                            $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][2]"]').closest('.row').hide();
+                            $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][3]"]').closest('.row').hide();
+                        } else {
+                            $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][1]"]').closest('.row').hide();
+                            $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][2]"]').closest('.row').show();
+                            $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][3]"]').closest('.row').hide();
+                        }
+                    });
+                <?php endforeach; ?>
+            });
+        </script>
+    <?php
+    return ob_get_clean();
+});
