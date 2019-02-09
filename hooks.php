@@ -61,9 +61,7 @@ add_hook('ClientAreaPage', 1, function ($vars)
 
         $additflds = new WHMCS\Domains\AdditionalFields();
         $additflds->setTLD('fi');
-        $domainfields = $additflds->getFieldsForOutput($key);
-
-        $vars['domains'][$key]['fields'] = $domainfields;
+        $vars['domains'][$key]['fields'] = $additflds->getFieldsForOutput($key);
         $vars['domains'][$key]['configtoshow'] = true;
     }
 
