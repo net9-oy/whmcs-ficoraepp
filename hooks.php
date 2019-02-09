@@ -4,6 +4,11 @@ if(!defined('WHMCS'))
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
+/**
+ * This hook will validate the additional fields that are required for each registrant type by Ficora
+ *
+ * An error will be returned if the necessary fields are not filled by the user
+ */
 add_hook('ShoppingCartValidateDomainsConfig', 50, function ($vars)
 {
     global $smarty;
@@ -44,6 +49,11 @@ add_hook('ShoppingCartValidateDomainsConfig', 50, function ($vars)
     return $errors;
 });
 
+/**
+ * This hook adds additional fields to transfer orders when the domains are being configured
+ *
+ * By default WHMCS does not provide additional fields for Transfer order type, but Ficora requires the additional info
+ */
 add_hook('ClientAreaPage', 1, function ($vars)
 {
     if($vars['templatefile'] !== 'configuredomains')
@@ -68,6 +78,12 @@ add_hook('ClientAreaPage', 1, function ($vars)
     return $vars;
 });
 
+/**
+ * This hook will save additional fields filled on a Transfer order domain configuration screen to $_SESSION so the
+ * field data can be used at hook CartTotalAdjustment to save it to the database
+ *
+ * By default WHMCS does not provide additional fields for Transfer order type, but Ficora requires the additional info
+ */
 add_hook('ShoppingCartValidateDomainsConfig', 1, function ($vars)
 {
     if(!array_key_exists('domainfield', $_POST))
@@ -90,6 +106,11 @@ add_hook('ShoppingCartValidateDomainsConfig', 1, function ($vars)
     }
 });
 
+/**
+ * This hook will save additional fields from $_SESSION to the database when the order type is Transfer
+ *
+ * By default WHMCS does not provide additional fields for Transfer order type, but Ficora requires the additional info
+ */
 add_hook('CartTotalAdjustment', 1, function ()
 {
     foreach ($_SESSION['cart']['domains'] as $key => $domain) {
@@ -116,6 +137,12 @@ add_hook('CartTotalAdjustment', 1, function ()
     }
 });
 
+/**
+ * This hook will hide the unnecessary additional fields for different registrant types
+ *
+ * For example a private person does not need to fill in a company VAT ID. This way the order process is much more clear
+ * and simple for customers
+ */
 add_hook('ClientAreaHeadOutput', 50, function($vars) {
     if($vars['templatefile'] !== 'configuredomains')
         return;
@@ -157,7 +184,13 @@ add_hook('ClientAreaHeadOutput', 50, function($vars) {
     return ob_get_clean();
 });
 
-
+/**
+ * Ficora transfers execute immediately and they either fail or succeed. This is why default WHMCS Transfer Sync
+ * functionality does not suffice.
+ *
+ * Instead on successful transfer, FicoraEPP For WHMCS will automatically update the domain from Pending Transfer to
+ * state Active
+ */
 add_hook('AfterRegistrarTransfer', 50, function($vars) {
     if(@$vars['params']['registrar'] !== 'ficoraepp') {
         return;
