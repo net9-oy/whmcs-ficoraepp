@@ -2,7 +2,7 @@
 $registrant_type = [
     'Name' => 'registrant_type',
     'DisplayName' => 'Registrant Type',
-    'LangVar' => 'nordname_registrant_type',
+    'LangVar' => 'ficora_registrant_type',
     'Type' => 'dropdown',
     'Options' => implode(',', [
         // 00 is a clever value that casts to int(0) in PHP, so we can still distinguish between these two but the API
