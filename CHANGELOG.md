@@ -2,6 +2,22 @@
 
 
 
+## [1.0.2](https://github.com/tssge/whmcs-ficoraepp/compare/1.0.1...1.0.2) (2019-02-09)
+
+
+### Bug Fixes
+
+* **additionalfields:** backwards compat regtype ([a0d032b](https://github.com/tssge/whmcs-ficoraepp/commit/a0d032b))
+* **additionalfields:** regression in language var ([5ac9ade](https://github.com/tssge/whmcs-ficoraepp/commit/5ac9ade))
+
+
+### Features
+
+* **language:** add finnish translation ([96e4aaa](https://github.com/tssge/whmcs-ficoraepp/commit/96e4aaa))
+* **transfer:** implement transfer sync ([4a88b7c](https://github.com/tssge/whmcs-ficoraepp/commit/4a88b7c))
+
+
+
 ## [1.0.1](https://github.com/tssge/whmcs-ficoraepp/compare/1.0.0...1.0.1) (2019-02-09)
 
 
