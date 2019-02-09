@@ -13,12 +13,12 @@ add_hook('ShoppingCartValidateDomainsConfig', 50, function ($vars)
         if(isset($vars['domainfield'][$key]['registrant_type']) &&
             (substr($domain['domain'], -strlen('.fi')) === '.fi')) {
             switch($vars['domainfield'][$key]['registrant_type']) {
-                case '00':
+                case '0':
                     if(!$vars['domainfield'][$key]['idNumber']) {
                         $errors[] = 'ID number is required for Finnish residents';
                     }
                     break;
-                case '0':
+                case '00':
                     if(!$vars['domainfield'][$key]['birthdate']) {
                         $errors[] = 'Birth date is required for foreign private persons';
                     }
@@ -136,11 +136,11 @@ add_hook('ClientAreaHeadOutput', 50, function($vars) {
                     $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][2]"]').closest('.row').hide();
                     $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][3]"]').closest('.row').hide();
                     $('#frmConfigureDomains select[name="domainfield[<?= $id ?>][0]"]').change(function() {
-                        if(this.value === '0') {
+                        if(this.value === '00') {
                             $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][1]"]').closest('.row').hide();
                             $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][2]"]').closest('.row').hide();
                             $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][3]"]').closest('.row').show();
-                        } else if(this.value === '00') {
+                        } else if(this.value === '0') {
                             $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][1]"]').closest('.row').show();
                             $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][2]"]').closest('.row').hide();
                             $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][3]"]').closest('.row').hide();
