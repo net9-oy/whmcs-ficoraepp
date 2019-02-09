@@ -1007,6 +1007,17 @@ function ficoraepp_Sync($params)
     }
 }
 
+/**
+ * Complete a domain transfer
+ *
+ * Domains transfered via Ficora will be transferred immediately. This is why normal WHMCS Transfer Sync functionality
+ * will not suffice.
+ *
+ * This function will activate the domain from Pending Transfer state correctly
+ *
+ * @param array $params common module parameters
+ * @return array
+ */
 function ficoraepp_CompleteTransfer($params)
 {
     try {
