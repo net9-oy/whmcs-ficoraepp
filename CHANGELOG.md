@@ -1,4 +1,13 @@
-#  (2019-02-09)
+#  (2019-02-10)
+
+
+
+## [1.0.3](https://github.com/tssge/whmcs-ficoraepp/compare/1.0.2...1.0.3) (2019-02-10)
+
+
+### Bug Fixes
+
+* **register:** regression in additional fields ([a56978c](https://github.com/tssge/whmcs-ficoraepp/commit/a56978c))
 
 
 
