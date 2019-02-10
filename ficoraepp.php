@@ -809,6 +809,12 @@ function ficoraepp_GetNameservers($params)
         }
 
         return $item;
+    } catch (\Metaregistrar\EPP\eppException $e) {
+        return [
+          'error' => (int) $e->getCode() === 2303
+              ? 'Domain is currently not registered. No name server information available.'
+              : $e->getMessage(),
+        ];
     } catch (\Exception $e) {
         logModuleCall(
             'ficoraepp',
