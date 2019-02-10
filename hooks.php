@@ -23,7 +23,7 @@ add_hook('ShoppingCartValidateDomainsConfig', 50, function ($vars)
                         $errors[] = 'ID number is required for Finnish residents';
                     }
                     break;
-                case '00':
+                case '10':
                     if(!$vars['domainfield'][$key]['birthdate']) {
                         $errors[] = 'Birth date is required for foreign private persons';
                     }
@@ -163,7 +163,7 @@ add_hook('ClientAreaHeadOutput', 50, function($vars) {
                     $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][2]"]').closest('.row').hide();
                     $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][3]"]').closest('.row').hide();
                     $('#frmConfigureDomains select[name="domainfield[<?= $id ?>][0]"]').change(function() {
-                        if(this.value === '00') {
+                        if(this.value === '10') {
                             $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][1]"]').closest('.row').hide();
                             $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][2]"]').closest('.row').hide();
                             $('#frmConfigureDomains input[name="domainfield[<?= $id ?>][3]"]').closest('.row').show();

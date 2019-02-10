@@ -5,10 +5,8 @@ $registrant_type = [
     'LangVar' => 'ficora_registrant_type',
     'Type' => 'dropdown',
     'Options' => implode(',', [
-        // 00 is a clever value that casts to int(0) in PHP, so we can still distinguish between these two but the API
-        // will handle them all the same
         '0|'  . \Lang::trans('Finnish Private Person'),
-        '00|' . \Lang::trans('Foreign Private Person'),
+        '10|' . \Lang::trans('Foreign Private Person'),
         '1|'  . \Lang::trans('Company'),
         '2|'  . \Lang::trans('Corporation'),
         '3|'  . \Lang::trans('Institution'),
@@ -20,7 +18,6 @@ $registrant_type = [
     'Default' => '0',
     'Required' => false
 ];
-
 
 $additionaldomainfields['.fi'][] = $registrant_type;
 $additionaldomainfields['.fi'][] = [

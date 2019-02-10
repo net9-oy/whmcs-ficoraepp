@@ -480,6 +480,11 @@ class FicoraModule
     {
         switch($strategy) {
             case 0:
+                if($this->params['additionalfields']['registrant_type'] &&
+                    (int) $this->params['additionalfields']['registrant_type'] === 10) {
+                    $this->params['additionalfields']['registrant_type'] = '0';
+                }
+
                 return (object) [
                     'registrantType' => (int) ($this->params['additionalfields']['registrant_type'] ?? 0),
                     'idNumber' => $this->params['additionalfields']['idNumber'] ?? null,
@@ -987,6 +992,8 @@ function ficoraepp_GetEPPCode($params)
 function ficoraepp_Sync($params)
 {
     try {
+        // WHMCS does not provide the Sync function with "domainname" parameter
+        $params['domainname'] = $params['domainname'] ?: $params['domain'];
         $info = (new FicoraModule($params))->info();
 
         return [
