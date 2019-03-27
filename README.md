@@ -28,7 +28,7 @@ composer install --no-dev
 
 ```
 openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 7200
-cat cert key > epp.pem
+cat cert key >> epp.pem
 ```
 
 * Fill API Username, API Password, Tech Contact, Certificate Path (epp.pem) and Certificate Password to WHMCS Setup -> Product & Services -> Domain Registerar -> Ficora Epp.
