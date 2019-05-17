@@ -1001,9 +1001,26 @@ function ficoraepp_Sync($params)
         // WHMCS does not provide the Sync function with "domainname" parameter
         $params['domainname'] = $params['domainname'] ?: $params['domain'];
         $info = (new FicoraModule($params))->info();
+        $date = new DateTimeImmutable($info->getDomainExpirationDate());
+
+        /**
+         * Ficora is dumb
+         *
+         * They will return expiration date long, long way in the past if the domain is on another account
+         *
+         * No error code is given: if is, we will catch and log
+         *
+         * Thus we will mark the domain as transferred away, because there is not other realistic reason for domain
+         * ending up on another account instead
+         */
+        if($date < new DateTimeImmutable('1970-01-01')) {
+            return [
+                'transferredAway' => true,
+            ];
+        }
 
         return [
-            'expirydate' => (new DateTime($info->getDomainExpirationDate()))->format('Y-m-d'), // Format: YYYY-MM-DD
+            'expirydate' => $date->format('Y-m-d'), // Format: YYYY-MM-DD
         ];
 
     } catch (\Exception $e) {
