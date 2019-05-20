@@ -35,7 +35,7 @@ add_hook('ShoppingCartValidateDomainsConfig', 50, function ($vars)
                 case '5':
                 case '6':
                 case '7':
-                    if(!$vars['domainfield'][$key]['registerNumber']) {
+                    if(!trim($vars['domainfield'][$key]['registerNumber'])) {
                         $errors[] = 'VAT/Register number is a required field for corporate bodies';
                     }
                     break;
