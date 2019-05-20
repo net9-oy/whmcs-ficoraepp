@@ -492,15 +492,15 @@ class FicoraModule
 
                 return (object) [
                     'registrantType' => (int) ($this->params['additionalfields']['registrant_type'] ?? 0),
-                    'idNumber' => $this->params['additionalfields']['idNumber'] ?? null,
-                    'registerNumber' => $this->params['additionalfields']['registerNumber'] ?? null,
-                    'birthdate' => $this->params['additionalfields']['birthdate'] ?? null,
+                    'idNumber' => trim(@$this->params['additionalfields']['idNumber']),
+                    'registerNumber' => trim(@$this->params['additionalfields']['registerNumber']),
+                    'birthdate' => trim(@$this->params['additionalfields']['birthdate']),
                 ];
             case 1:
                 return (object) [
                     'registrantType' => $this->params['companyname'] ? 1 : 0,
-                    'idNumber' => $this->params['customfields' . $this->params['ficora_personid_field']] ?? null,
-                    'registerNumber' => $this->params['customfields' . $this->params['ficora_companyid_field']] ?? null,
+                    'idNumber' => trim(@$this->params['customfields' . $this->params['ficora_personid_field']]),
+                    'registerNumber' => trim(@$this->params['customfields' . $this->params['ficora_companyid_field']]),
                     'birthdate' => '1990-01-01',
                 ];
             default:
