@@ -4,6 +4,8 @@ if(!defined('WHMCS'))
 
 use Illuminate\Database\Capsule\Manager as Capsule;
 
+require_once __DIR__ . '/vendor/autoload.php';
+
 /**
  * This hook will validate the additional fields that are required for each registrant type by Ficora
  *
@@ -19,8 +21,10 @@ add_hook('ShoppingCartValidateDomainsConfig', 50, function ($vars)
             (substr($domain['domain'], -strlen('.fi')) === '.fi')) {
             switch($vars['domainfield'][$key]['registrant_type']) {
                 case '0':
-                    if(!$vars['domainfield'][$key]['idNumber']) {
+                    if(!trim($vars['domainfield'][$key]['idNumber'])) {
                         $errors[] = 'ID number is required for Finnish residents';
+                    } elseif(!Validate_FI::pin(trim($vars['domainfield'][$key]['idNumber']))) {
+                        $errors[] = 'Given ID number is invalid';
                     }
                     break;
                 case '10':

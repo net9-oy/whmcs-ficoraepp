@@ -42,6 +42,6 @@ $additionaldomainfields['.fi'][] = [
     'LangVar' => 'ficora_fi_birthdate',
     "Type" => "text",
     "Size" => "10",
-    "Default" => "1900-01-01",
+    "Default" => "1990-01-01",
     "Required" => false
 ];

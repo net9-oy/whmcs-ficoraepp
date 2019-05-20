@@ -18,3 +18,4 @@ $_LANG['ID number is required for Finnish residents'] = 'Henkilötunnus vaadittu
 $_LANG['Birth date is required for foreign private persons'] = 'Syntymäaika on vaadittu ulkomaalaisilta henkilöiltä';
 $_LANG['VAT/Register number is a required field for corporate bodies'] = 'Y-tunnus on vaadittu';
 $_LANG['Registrant type is missing'] = 'Rekisteröijän tyyppi puuttuu';
+$_LANG['Given ID number is invalid'] = 'Antamasi henkilötunnus on väärin';
