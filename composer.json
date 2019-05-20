@@ -5,9 +5,16 @@
     "license": "LGPLv2",
     "require": {
         "metaregistrar/php-epp-client": "@dev",
-        "symfony/cache": "^3.0"
+        "symfony/cache": "^3.0",
+        "pear/validate_fi": "@dev"
     },
     "require-dev": {
         "phpunit/phpunit": "^6.3"
-    }
+    },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/pear/Validate_FI"
+        }
+    ]
 }

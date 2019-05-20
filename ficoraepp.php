@@ -22,7 +22,7 @@ use Metaregistrar\EPP\ficoraEppRenewRequest;
 use Metaregistrar\EPP\ficoraEppUpdateContactRequest;
 use Metaregistrar\EPP\ficoraEppUpdateDomainRequest;
 
-require __DIR__ . '/vendor/autoload.php';
+require_once __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/cache.php';
 require __DIR__ . '/ficoraEppTransferRequest.php';
 
