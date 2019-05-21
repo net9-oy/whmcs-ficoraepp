@@ -325,6 +325,11 @@ class FicoraModule
      */
     protected function getOrCreateContact(): string
     {
+        if(!$this->params['ficora_contact_cache']) {
+            return $this->contactId = $this->createContact();
+        }
+
+
         return $this->contactId = $this->getContact() ?? $this->createContact();
     }
 
@@ -676,6 +681,12 @@ function ficoraepp_getConfigArray()
             'FriendlyName' => 'Enable debug mode',
             'Type' => 'yesno',
             'Description' => 'Module will write debug info the the webroot in debug.txt file',
+        ],
+        'ficora_cache_contact' => [
+            'FriendlyName' => 'Contact cache (deprecated)',
+            'Type' => 'yesno',
+            'Description' => 'Deprecated in version 1.1. Allows to cache Ficora contacts per WHMCS client. Not ' .
+                'recommended, as it can lead to stale information.',
         ],
     ];
 }
