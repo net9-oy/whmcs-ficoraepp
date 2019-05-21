@@ -70,9 +70,9 @@ class FicoraModule
      */
     public function updateNameservers()
     {
-        $domain = new ficoraEppDomain($this->params['domainname']);
-        $del = new ficoraEppDomain($this->params['domainname']);
-        $add = new ficoraEppDomain($this->params['domainname']);
+        $domain = new ficoraEppDomain($this->domain());
+        $del = new ficoraEppDomain($this->domain());
+        $add = new ficoraEppDomain($this->domain());
         foreach ($this->getNameservers() as $ns) {
             $del->addHost(new eppHost($ns));
         }
@@ -102,7 +102,7 @@ class FicoraModule
         $this->connection->request(
             new ficoraEppRenewRequest(
                 new ficoraEppDomain(
-                    $this->params['domainname'],
+                    $this->domain(),
                     null,
                     null,
                     null,
@@ -176,7 +176,7 @@ class FicoraModule
     {
         /* @var $response ficoraEppInfoDomainResponse */
         $response = $this->connection->request(new ficoraEppInfoDomainRequest(new ficoraEppDomain(
-            $this->params['domainname'])));
+            $this->domain())));
         return $response;
     }
 
@@ -204,11 +204,11 @@ class FicoraModule
         $password = str_shuffle("aB1#" . eppContact::generateRandomString());
         $this->connection->request(
             new ficoraEppUpdateDomainRequest(
-                $this->params['domainname'],
+                $this->domain(),
                 null,
                 null,
                 new ficoraEppDomain(
-                    $this->params['domainname'],
+                    $this->domain(),
                     null,
                     null,
                     null,
@@ -302,7 +302,7 @@ class FicoraModule
     {
         if (!array_key_exists('userid', $this->params)) {
             $this->params['userid'] = Capsule::table('tbldomains')
-                ->where('id', '=', $this->params['domainid'])
+                ->where('id', '=', $this->domain())
                 ->value('userid');
         }
 
@@ -427,7 +427,7 @@ class FicoraModule
     protected function eppDomain(array $ns): ficoraEppDomain
     {
         return new ficoraEppDomain(
-            $this->params['domainname'], $this->getOrCreateContact(),
+            $this->domain(), $this->getOrCreateContact(),
             ($this->params['ficora_contact'] ?? null)
                 ? [new eppContactHandle($this->params['ficora_contact'], eppContactHandle::CONTACT_TYPE_TECH)]
                 : null,
@@ -502,6 +502,17 @@ class FicoraModule
                 throw new \RuntimeException(
                     "Custom field strategy {$this->params['ficora_custom_fields_strategy']} not recognized.");
         }
+    }
+
+    /**
+     * Returns the correctly IDN formatetd domain held in parameters
+     *
+     * @return string
+     */
+    private function domain(): string
+    {
+        // Try to fetch original
+        return idn_to_ascii($this->params['original']['domainname'] ?? $this->params['domainname']);
     }
 }
 
