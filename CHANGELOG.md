@@ -2,6 +2,15 @@
 
 
 
+## [1.1.1](https://github.com/tssge/whmcs-ficoraepp/compare/1.1.0...1.1.1) (2019-05-21)
+
+
+### Bug Fixes
+
+* **contacts:** saving contact details ([99db059](https://github.com/tssge/whmcs-ficoraepp/commit/99db059))
+
+
+
 # [1.1.0](https://github.com/tssge/whmcs-ficoraepp/compare/1.0.3...1.1.0) (2019-05-21)
 
 
