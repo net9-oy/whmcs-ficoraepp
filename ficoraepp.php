@@ -268,7 +268,8 @@ class FicoraModule
             $contact->setType(eppContact::TYPE_LOC);
             $this->connection->request(
                 new ficoraEppUpdateContactRequest(
-                    $this->getContact(),
+                    new eppContactHandle($this->info()->getDomainRegistrant(),
+                        eppContactHandle::CONTACT_TYPE_REGISTRANT),
                     null,
                     null,
                     $contact
