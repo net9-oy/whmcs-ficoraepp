@@ -511,7 +511,8 @@ class FicoraModule
      */
     private function domain(): string
     {
-        return idn_to_ascii($this->params['domainname']);
+        // Try to fetch original
+        return idn_to_ascii($this->params['original']['domainname'] ?? $this->params['domainname']);
     }
 }
 
