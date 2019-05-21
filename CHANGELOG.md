@@ -1,4 +1,32 @@
-#  (2019-02-10)
+#  (2019-05-21)
+
+
+
+# [1.1.0](https://github.com/tssge/whmcs-ficoraepp/compare/1.0.3...1.1.0) (2019-05-21)
+
+
+### Bug Fixes
+
+* **nameservers:** clear error for non registered ([7deb5a8](https://github.com/tssge/whmcs-ficoraepp/commit/7deb5a8))
+* **sync:** handling of transferred away domains ([1c02eb9](https://github.com/tssge/whmcs-ficoraepp/commit/1c02eb9)), closes [#11](https://github.com/tssge/whmcs-ficoraepp/issues/11)
+
+
+### Documentation
+
+* **readme:** installation instructions ([f20617f](https://github.com/tssge/whmcs-ficoraepp/commit/f20617f))
+
+
+### Features
+
+* **contacts:** remove contact cache ([#15](https://github.com/tssge/whmcs-ficoraepp/issues/15)) ([40f14ce](https://github.com/tssge/whmcs-ficoraepp/commit/40f14ce))
+* **general:** IDN domain support ([e7f9148](https://github.com/tssge/whmcs-ficoraepp/commit/e7f9148))
+* **register:** finnish SSN validation ([a57549f](https://github.com/tssge/whmcs-ficoraepp/commit/a57549f))
+* **register:** reduce user error on extra fields ([92cf18e](https://github.com/tssge/whmcs-ficoraepp/commit/92cf18e)), closes [#13](https://github.com/tssge/whmcs-ficoraepp/issues/13)
+
+
+### Styles
+
+* **translation:** double quotes to single quotes ([3050bd1](https://github.com/tssge/whmcs-ficoraepp/commit/3050bd1))
 
 
 
@@ -8,6 +36,12 @@
 ### Bug Fixes
 
 * **register:** regression in additional fields ([a56978c](https://github.com/tssge/whmcs-ficoraepp/commit/a56978c))
+
+
+### Documentation
+
+* **hooks:** add documentation for hook functions ([69c4888](https://github.com/tssge/whmcs-ficoraepp/commit/69c4888))
+* **transfer:** document CompleteTransfer function ([7cc399e](https://github.com/tssge/whmcs-ficoraepp/commit/7cc399e))
 
 
 
@@ -28,6 +62,16 @@
 
 
 ## [1.0.1](https://github.com/tssge/whmcs-ficoraepp/compare/1.0.0...1.0.1) (2019-02-09)
+
+
+### Code Refactoring
+
+* **hooks:** improve readability ([59bb86f](https://github.com/tssge/whmcs-ficoraepp/commit/59bb86f))
+
+
+### Documentation
+
+* **readme:** correct the debug log path ([f5f2ec6](https://github.com/tssge/whmcs-ficoraepp/commit/f5f2ec6))
 
 
 ### Features
