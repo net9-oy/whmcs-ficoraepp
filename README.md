@@ -31,8 +31,8 @@ openssl req -x509 -newkey rsa:2048 -keyout key.pem -out cert.pem -days 7200
 cat cert key >> epp.pem
 ```
 
-* Fill API Username, API Password, Tech Contact, Certificate Path (epp.pem) and Certificate Password to WHMCS Setup -> Product & Services -> Domain Registerar -> Ficora Epp.
+* Fill API Username, API Password, Tech Contact, Certificate Path (epp.pem) and Certificate Password to WHMCS Setup -> Products/Services -> Domain Registrars -> Ficora EPP.
 
 ## Debug
 
-* Enable Debug-logging on WHMCS HMCS Setup -> Product & Services -> Domain Registerar -> Ficora Epp and tick Enable debug mode. This will write debug log to <your WHMCS installation>/debug.txt
+* Enable Debug-logging on WHMCS Setup -> Products/Services -> Domain Registrars -> Ficora EPP and tick Enable debug mode. This will write debug log to <your WHMCS installation>/debug.txt
