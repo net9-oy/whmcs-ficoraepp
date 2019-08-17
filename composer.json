@@ -2,7 +2,7 @@
     "name": "net9/FicoraEPP",
     "type": "module",
     "description": "Ficora EPP module for WHMCS",
-    "license": "LGPLv2",
+    "license": "GPLv2",
     "require": {
         "metaregistrar/php-epp-client": "@dev",
         "symfony/cache": "^3.0",
