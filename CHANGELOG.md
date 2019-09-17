@@ -1,4 +1,13 @@
-#  (2019-05-21)
+#  (2019-09-17)
+
+
+
+## [1.1.2](https://github.com/tssge/whmcs-ficoraepp/compare/1.1.1...1.1.2) (2019-09-17)
+
+
+### Bug Fixes
+
+* **registration:** missing values with Profile Fields strategy ([72b014b](https://github.com/tssge/whmcs-ficoraepp/commit/72b014b))
 
 
 
