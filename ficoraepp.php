@@ -498,10 +498,11 @@ class FicoraModule
                     'birthdate' => trim(@$this->params['additionalfields']['birthdate']),
                 ];
             case 1:
+                $fields = collect($this->params['customfields'])->keyBy('id')->pluck('value', 'id');
                 return (object) [
                     'registrantType' => $this->params['companyname'] ? 1 : 0,
-                    'idNumber' => trim(@$this->params['customfields' . $this->params['ficora_personid_field']]),
-                    'registerNumber' => trim(@$this->params['customfields' . $this->params['ficora_companyid_field']]),
+                    'idNumber' => trim($fields->get($this->params['ficora_personid_field'], '')),
+                    'registerNumber' => trim($fields->get($this->params['ficora_companyid_field'], '')),
                     'birthdate' => '1990-01-01',
                 ];
             default:
