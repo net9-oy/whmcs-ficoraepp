@@ -299,39 +299,13 @@ class FicoraModule
         return $ns;
     }
 
-    protected function getContact()
-    {
-        if (!array_key_exists('userid', $this->params)) {
-            $this->params['userid'] = Capsule::table('tbldomains')
-                ->where('id', '=', $this->domain())
-                ->value('userid');
-        }
-
-        if (!$this->params['userid']) {
-            throw new \RuntimeException('No client id defined when calling getContact()');
-        }
-
-        if (!class_exists(Capsule::class)) {
-            return null;
-        }
-
-        return $this->contactId = Capsule::table('mod_ficora')
-            ->where('client_id', '=', $this->params['userid'])->value('contact_id');
-    }
-
-
     /**
      * @return string
      * @throws \Metaregistrar\EPP\eppException
      */
     protected function getOrCreateContact(): string
     {
-        if(!$this->params['ficora_contact_cache']) {
-            return $this->contactId = $this->createContact();
-        }
-
-
-        return $this->contactId = $this->getContact() ?? $this->createContact();
+        return $this->contactId = $this->createContact();
     }
 
     /**
@@ -414,13 +388,6 @@ class FicoraModule
 
         /* @var $response eppCreateContactResponse */
         $response = $this->connection->request($contact);
-
-        if (class_exists('\Illuminate\Database\Capsule\Manager')) {
-            Capsule::table('mod_ficora')->insert([
-                'contact_id' => $response->getContactId(),
-                'client_id' => $this->params['userid']
-            ]);
-        }
 
         return $this->contactId = $response->getContactId();
     }
@@ -559,18 +526,6 @@ function ficoraepp_MetaData()
  */
 function ficoraepp_getConfigArray()
 {
-    if (!Capsule::schema()->hasTable('mod_ficora')) {
-        Capsule::schema()->create('mod_ficora', function (\Illuminate\Database\Schema\Blueprint $table) {
-            $table->string('contact_id');
-            $table->integer('client_id');
-            $table->foreign('client_id')
-                ->references('id')
-                ->on('tblclients')
-                ->onDelete('cascade')
-                ->onUpdate('cascade');
-        });
-    }
-
     $customFields = collect(Capsule::table('tblcustomfields')
         ->where('type', '=', 'client')
         ->where('fieldtype', '=', 'text')
@@ -683,12 +638,6 @@ function ficoraepp_getConfigArray()
             'FriendlyName' => 'Enable debug mode',
             'Type' => 'yesno',
             'Description' => 'Module will write debug info the the webroot in debug.txt file',
-        ],
-        'ficora_cache_contact' => [
-            'FriendlyName' => 'Contact cache (deprecated)',
-            'Type' => 'yesno',
-            'Description' => 'Deprecated in version 1.1. Allows to cache Ficora contacts per WHMCS client. Not ' .
-                'recommended, as it can lead to stale information.',
         ],
     ];
 }
