@@ -1,5 +1,5 @@
 {
-    "name": "net9/FicoraEPP",
+    "name": "net9/ficora-epp",
     "type": "module",
     "description": "Ficora EPP module for WHMCS",
     "license": "GPLv2",
