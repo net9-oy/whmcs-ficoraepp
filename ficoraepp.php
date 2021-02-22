@@ -25,6 +25,7 @@ use Metaregistrar\EPP\ficoraEppUpdateDomainRequest;
 require_once __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/cache.php';
 require __DIR__ . '/ficoraEppTransferRequest.php';
+require __DIR__ . '/net9FicoraEppUpdateContactRequest.php';
 
 class FicoraModule
 {
@@ -47,6 +48,8 @@ class FicoraModule
         $connection->setLogFile('debug.txt');
         $connection->addCommandResponse('FicoraEpp\\ficoraEppTransferRequest',
             'Metaregistrar\\EPP\\eppTransferResponse');
+        $connection->addCommandResponse('FicoraEpp\\net9FicoraEppUpdateContactRequest',
+            'Metaregistrar\EPP\eppUpdateContactResponse');
         $this->connection = $connection;
         $this->connection->login();
     }
@@ -248,15 +251,23 @@ class FicoraModule
                 continue;
             }
 
+            $extraInfo = $this->gatherExtraInformation($this->params['ficora_custom_fields_strategy']);
+
             $postal = new ficoraEppContactPostalInfo(
-                null,
+                $extraInfo->registrantType === 0 ? null : "{$details['First Name']} {$details['Last Name']}",
                 $details['City'],
                 $details['Country'],
-                null,
+                $extraInfo->registrantType === 0 ? null : $details['Company Name'],
                 $details['Address 1'],
-                null,
+                $details['State'] ?: null,
                 $details['Postcode'],
-                eppContact::TYPE_LOC
+                eppContact::TYPE_LOC,
+                $extraInfo->registrantType === 0 ? $details['First Name'] : null,
+                $extraInfo->registrantType === 0 ? $details['Last Name'] : null,
+                $details['Country'] === 'FI',
+                $extraInfo->registrantType === 0 ? $extraInfo->idNumber : null,
+                null,
+                $extraInfo->registrantType !== 0 ? $extraInfo->registerNumber : null
             );
             $postal->setIsFinnish($details['Country'] === 'FI');
             $contact = new eppContact(
@@ -266,15 +277,15 @@ class FicoraModule
             );
             $contact->setPassword(null);
             $contact->setType(eppContact::TYPE_LOC);
-            $this->connection->request(
-                new ficoraEppUpdateContactRequest(
-                    new eppContactHandle($this->info()->getDomainRegistrant(),
-                        eppContactHandle::CONTACT_TYPE_REGISTRANT),
-                    null,
-                    null,
-                    $contact
-                )
+            $request = new \FicoraEpp\net9FicoraEppUpdateContactRequest(
+                new eppContactHandle($this->info()->getDomainRegistrant(),
+                    eppContactHandle::CONTACT_TYPE_REGISTRANT),
+                $extraInfo->registrantType,
+                null,
+                null,
+                $contact
             );
+            $this->connection->request($request);
         }
     }
 
