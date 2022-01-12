@@ -9,6 +9,7 @@ use Metaregistrar\EPP\eppContactHandle;
 use Metaregistrar\EPP\eppCreateContactResponse;
 use Metaregistrar\EPP\eppCreateDomainRequest;
 use Metaregistrar\EPP\eppHost;
+use Metaregistrar\EPP\eppSecdns;
 use Metaregistrar\EPP\eppTransferRequest;
 use Metaregistrar\EPP\ficoraEppConnection;
 use Metaregistrar\EPP\ficoraEppContactPostalInfo;
@@ -26,6 +27,8 @@ require_once __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/cache.php';
 require __DIR__ . '/ficoraEppTransferRequest.php';
 require __DIR__ . '/net9FicoraEppUpdateContactRequest.php';
+
+use WHMCS\Domain\Registrar\Domain;
 
 class FicoraModule
 {
@@ -287,6 +290,41 @@ class FicoraModule
             );
             $this->connection->request($request);
         }
+    }
+
+    /**
+     * @param eppSecdns $sec
+     * @throws \Metaregistrar\EPP\eppException
+     */
+    public function addDs(eppSecdns $sec): void
+    {
+        $domain = new ficoraEppDomain($this->domain());
+        $domain->addSecdns($sec);
+        $request = new \Metaregistrar\EPP\eppDnssecUpdateDomainRequest($this->domain(), $domain);
+        $request->domainobject->setAttribute('xmlns:domain','urn:ietf:params:xml:ns:domain-1.0');
+
+        $this->connection->request($request);
+    }
+
+    /**
+     * @param $flags
+     * @param $protocol
+     * @param $algorithm
+     * @param $pubKey
+     * @throws \Metaregistrar\EPP\eppException
+     */
+    public function addKey($flags, $protocol, $algorithm, $pubKey)
+    {
+        $sec = new \Metaregistrar\EPP\eppSecdns();
+        $sec->setKey($flags, $algorithm, $pubKey);
+        $sec->setProtocol($protocol);
+
+        $domain  = new ficoraEppDomain($this->domain());
+        $domain->addSecdns($sec);
+        $request = new \Metaregistrar\EPP\eppDnssecUpdateDomainRequest($this->domain(), $domain);
+        $request->domainobject->setAttribute('xmlns:domain','urn:ietf:params:xml:ns:domain-1.0');
+
+        $this->connection->request($request);
     }
 
     protected function getNameserversForRequest(): array
@@ -1070,5 +1108,117 @@ function ficoraepp_CompleteTransfer($params)
         return [
             'error' => $e->getMessage(),
         ];
+    }
+}
+
+function ficoraepp_ClientAreaCustomButtonArray($params)
+{
+    return [
+        \Lang::trans('DNSSEC Records') => 'DnsSec',
+    ];
+}
+
+function ficoraepp_ClientAreaAllowedFunctions()
+{
+    return ['AddDs', 'AddKey'];
+}
+
+function ficoraepp_DnsSec($params)
+{
+    try {
+        $info = (new FicoraModule($params))->info();
+
+        foreach($info->xPath()->query('/epp:epp/epp:response/epp:extension/secDNS:infData/*') ?: []
+                as $element) {
+            if ($element->getElementsByTagName('keyTag')->length > 0) {
+                $secdns = new eppSecdns();
+                $secdns->setKeytag($element->getElementsByTagName('keyTag')->item(0)->nodeValue);
+                $secdns->setAlgorithm($element->getElementsByTagName('alg')->item(0)->nodeValue);
+                $secdns->setDigestType($element->getElementsByTagName('digestType')->item(0)->nodeValue);
+                $secdns->setDigest($element->getElementsByTagName('digest')->item(0)->nodeValue);
+                $dsRecords[] = $secdns;
+            }
+        }
+
+        foreach ($info->xPath()->query('/epp:epp/epp:response/epp:extension/secDNS:infData/*') ?: []
+                 as $element) {
+            if ($element->getElementsByTagName('pubKey')->length > 0) {
+                $secdns = new eppSecdns();
+                $flags = $element->getElementsByTagName('flags')->item(0)->nodeValue;
+                $algorithm = $element->getElementsByTagName('alg')->item(0)->nodeValue;
+                $pubkey = $element->getElementsByTagName('pubKey')->item(0)->nodeValue;
+                $secdns->setKey($flags, $algorithm, $pubkey);
+                $keyRecords[] = $secdns;
+            }
+        }
+
+        return [
+            'templatefile' => 'dnssec',
+            'breadcrumb' => [
+                '#' => \Lang::trans('DNSSEC records'),
+            ],
+            'vars' => [
+                'dsRecords' => $dsRecords ?? [],
+                'keyRecords' => $keyRecords ?? [],
+                'displayTitle' => sprintf(\Lang::trans('DNSSEC records for %s'), $params['original']['domainname']
+                    ?? $params['domainname']),
+            ],
+        ];
+    } catch (\Metaregistrar\EPP\eppException $e) {
+        logModuleCall(
+            'ficoraepp',
+            __FUNCTION__,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
+            $e->getMessage(),
+            $e->getMessage() . "\n" . $e->getTraceAsString()
+        );
+        return [
+            'error' => $e->getMessage(),
+        ];
+    }
+}
+
+function ficoraepp_AddDs($params)
+{
+    $keyTag = $_REQUEST['keyTag'];
+    $alg = $_REQUEST['alg'];
+    $digestType = $_REQUEST['digestType'];
+    $digest = $_REQUEST['digest'];
+
+    $sec = new eppSecdns();
+    $sec->setKey(257, 13, 'mdsswUyr3DPW132mOi8V9xESWE8jTo0dxCjjnopKl+GqJxpVXckHAeF+KkxLbxILfDLUT0rAK9iUzy1L53eKGQ==');
+    $sec->setData(2371, 2, 'B7EE850EF6C30C22F6CA48064B3E47B3BE6326B5463407DFDB32C4CBAEEF51F7');
+    $sec->setProtocol(3);
+
+    try {
+        (new FicoraModule($params))->addDs($sec);
+    } catch (\Metaregistrar\EPP\eppException $e) {
+        logModuleCall(
+            'ficoraepp',
+            __FUNCTION__,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
+            $e->getMessage(),
+            $e->getMessage() . "\n" . $e->getTraceAsString()
+        );
+    }
+}
+
+function ficoraepp_AddKey($params)
+{
+    $flags = $_REQUEST['flags'];
+    $alg = $_REQUEST['alg'];
+    $pubKey = $_REQUEST['pubKey'];
+    $protocol = $_REQUEST['protocol'];
+
+    try {
+        (new FicoraModule($params))->addKey($flags, $protocol, $alg, $pubKey);
+    } catch (\Metaregistrar\EPP\eppException $e) {
+        logModuleCall(
+            'ficoraepp',
+            __FUNCTION__,
+            $e instanceof \Metaregistrar\EPP\eppException ? $e->getLastCommand() . print_r($params, true) : $params,
+            $e->getMessage(),
+            $e->getMessage() . "\n" . $e->getTraceAsString()
+        );
     }
 }

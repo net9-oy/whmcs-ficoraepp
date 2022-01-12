@@ -16,5 +16,10 @@
             "type": "vcs",
             "url": "https://github.com/pear/Validate_FI"
         }
-    ]
+    ],
+    "autoload": {
+        "psr-4": {
+            "dns\\": "src/dns/"
+        }
+    }
 }
