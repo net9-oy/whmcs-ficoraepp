@@ -483,10 +483,30 @@ class FicoraModule
                     'registerNumber' => trim($fields->get($this->params['ficora_companyid_field'], '')),
                     'birthdate' => '1990-01-01',
                 ];
+						case 2:
+                $fields = collect($this->params['customfields'])->keyBy('id')->pluck('value', 'id');
+                return (object) [
+                    'registrantType' => $this->params['companyname'] ? 1 : 0,
+                    'idNumber' => trim($fields->get($this->params['ficora_personid_field'], '')),
+                    'registerNumber' => $this->vatIdToYTunnus(trim(@$this->params['tax_id'])),
+                    'birthdate' => '1990-01-01',
+                ];
             default:
                 throw new \RuntimeException(
                     "Custom field strategy {$this->params['ficora_custom_fields_strategy']} not recognized.");
         }
+    }
+    
+    private function vatIdToYTunnus($vatId) {
+      $twoFirst = substr($vatId, 0, 2);
+      if (strtoupper($twoFirst) == "FI") {
+        $afterTwo = substr($vatId, 2);
+        $firstPart = substr($afterTwo, 0,7);
+        $secondPart = substr($afterTwo,-1);
+        return $firstPart . "-" . $secondPart;
+      } else {
+        return $vatId;
+      }
     }
 
     /**
@@ -640,6 +660,7 @@ function ficoraepp_getConfigArray()
             'Options' => [
                 'Additional fields',
                 'Profile fields ',
+                'Custom contact VAT support',
             ],
             'Default' => 0,
             'Description' =>
@@ -1072,3 +1093,5 @@ function ficoraepp_CompleteTransfer($params)
         ];
     }
 }
+
+
