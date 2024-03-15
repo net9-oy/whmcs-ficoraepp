@@ -48,6 +48,8 @@ class net9FicoraEppUpdateContactRequest extends eppUpdateContactRequest
          *
          * There is no Metaregistrar EPP fix yet, pull request after this one is validated
          */
+        $contactPostalInfo->appendChild($this->createElement('contact:isfinnish', $postalInfo->getIsFinnish()));
+
         if ($postalInfo->getFirstName() && $this->ficoraIdentityType === 0) {
             $contactPostalInfo->appendChild($this->createElement('contact:firstname', $postalInfo->getFirstName()));
         }
