@@ -269,7 +269,7 @@ class FicoraModule
                 null,
                 $extraInfo->registrantType !== 0 ? $extraInfo->registerNumber : null
             );
-            $postal->setIsFinnish($details['Country'] === 'FI');
+            $postal->setIsFinnish($details['Country'] === 'FI' ? '1' : '0');
             $contact = new eppContact(
                 $postal,
                 $details['Email Address'],
